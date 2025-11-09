@@ -1,6 +1,11 @@
 import soundata
-#import librosa
-#import matplotlib.pyplot as plt
+import librosa
+import librosa.display
+import tkinter as tk
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
+
 import numpy as np
 
 
@@ -60,4 +65,50 @@ test_data = audio_paths[int(num_labels * 0.8):]
 print(len(train_data))
 print(len(valid_data))
 print(len(test_data))
+
+#write a loops for all training audio samples store spectrograms data for CNN?
+wave_data,sr = librosa.load(train_paths[0], sr=30000)
+train_data = librosa.effects.time_stretch(wave_data,rate=0.5)
+train_data = train_data[:4*sr]
+train_data = librosa.util.fix_length(train_data,size=4*sr)
+
+#Loop for all validate data
+wave_data,sr = librosa.load(valid_paths[0], sr=30000)
+valid_data = librosa.effects.time_stretch(wave_data,rate=0.5)
+valid_data = valid_data[:3*sr]
+valid_data = librosa.util.fix_length(valid_data,size=3*sr)
+
+
+#Loop for all testing data
+wave_data,sr = librosa.load(test_paths[0], sr=30000)
+test_data = librosa.effects.time_stretch(wave_data,rate=0.5)
+test_data = test_data[:3*sr]
+test_data = librosa.util.fix_length(test_data,size=3*sr)
+
+#Plotting the waveform/data
+#print(wave_data.size)
+#Plotting raw data for checking
+#plt.figure(figsize=(10, 4))
+#librosa.display.waveshow(wave_data,max_points=10000)
+#plt.show()
+
+
+#Spectrogram
+Spectro = librosa.feature.melspectrogram(y=train_data,sr=sr)
+
+#convert to DB scale
+S_dB = librosa.power_to_db(Spectro, ref=np.max)
+
+
+
+'''
+#plotting spectrogram
+fig, ax = plt.subplots()
+img = librosa.display.specshow(S_dB, x_axis='time',
+                         y_axis='mel', sr=sr,
+                         fmax=8000, ax=ax)
+fig.colorbar(img, ax=ax, format='%+2.0f dB')
+ax.set(title='Mel-frequency spectrogram')
+plt.show()
+'''
 
